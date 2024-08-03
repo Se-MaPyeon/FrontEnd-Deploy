@@ -1,12 +1,10 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://43.200.67.235:8080/api/v1';
-
 // 로그인 api
 export const login = async (id, pw) => {
     try {
-        console.log(`Sending login request to ${BASE_URL}/login with id: ${id} and pw: ${pw}`); // 로그 추가
-        const response = await axios.post(`${BASE_URL}/login`, { id, pw }, { timeout: 5000 });
+        console.log(`Sending login request to /api/v1/login with id: ${id} and pw: ${pw}`); // 로그 추가
+        const response = await axios.post(`/api/v1/login`, { id, pw }, { timeout: 5000 });
         console.log('Login response:', response); // 응답 로그 추가
         return response.data;
     } catch (error) {
@@ -19,7 +17,7 @@ export const login = async (id, pw) => {
 export const getBoards = async (accessToken, categoryName) => {
     console.log("getBoards api 요청");
     try {
-        const response = await axios.get(`${BASE_URL}/boards`, {
+        const response = await axios.get(`/api/v1/boards`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -37,7 +35,7 @@ export const getBoards = async (accessToken, categoryName) => {
 // 마이페이지 게시물 Board api
 export const getMyPageBoards = async (accessToken) => {
     try {
-        const response = await axios.get(`${BASE_URL}/member/boards`, {
+        const response = await axios.get(`/api/v1/member/boards`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
@@ -52,7 +50,7 @@ export const getMyPageBoards = async (accessToken) => {
 // 게시글 작성 api
 export const createBoard = async (accessToken, title, content, category) => {
     try {
-        const response = await axios.post(`${BASE_URL}/board`, {
+        const response = await axios.post(`/api/v1/board`, {
             title,
             content,
             category
@@ -71,7 +69,7 @@ export const createBoard = async (accessToken, title, content, category) => {
 // 게시물 삭제 api
 export const deleteBoard = async (accessToken, boardId) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/board/${boardId}`, {
+      const response = await axios.delete(`/api/v1/board/${boardId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -86,7 +84,7 @@ export const deleteBoard = async (accessToken, boardId) => {
 // 게시물 추천
 export const likePost = async (boardId, token) => {
     try {
-        const response = await axios.post(`${BASE_URL}/like/${boardId}`, null, {
+        const response = await axios.post(`/api/v1/like/${boardId}`, null, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -101,7 +99,7 @@ export const likePost = async (boardId, token) => {
 // 게시물 추천 취소
 export const unlikePost = async (boardId, token) => {
     try {
-        const response = await axios.delete(`${BASE_URL}/like/${boardId}`, {    
+        const response = await axios.delete(`/api/v1/like/${boardId}`, {    
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -116,7 +114,7 @@ export const unlikePost = async (boardId, token) => {
 export const getLikeCount = async (boardId, accessToken) => {
     console.log(`Fetching like count for boardId: ${boardId} with token: ${accessToken}`); // 로그 추가
     try {
-        const response = await axios.get(`${BASE_URL}/like/${boardId}/count`, {
+        const response = await axios.get(`/api/v1/like/${boardId}/count`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
