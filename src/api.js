@@ -3,7 +3,7 @@ import axios from 'axios';
 // 환경에 따라 baseURL 설정
 const host = window.location.hostname === "localhost"
     ? 'http://43.200.67.235:8080'
-    : '/api';
+    : '';
 
 export const apiClient = axios.create({
     baseURL: host,
