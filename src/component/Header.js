@@ -5,7 +5,7 @@ import mapyeniImage from '../assets/img/마편이.jpg';
 import { AuthContext } from '../context/AuthContext'
 
 function Header() {
-  const { isLogin, setIsLogin } = useContext(AuthContext);
+  const { isLogin, handleLogout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // 우측 버튼1: 메인페이지 이동 구현
@@ -29,8 +29,8 @@ function Header() {
     }
   };
   // 우측 버튼 3: 로그아웃도 나중에 구현
-  const handleLogout = () => {
-    setIsLogin(false);
+  const handleLogoutClick = () => {
+    handleLogout();
     navigate('/login');
   };
   // left-section 클릭시 메인페이지 이동
@@ -52,7 +52,7 @@ function Header() {
       <div className="right-section">
         <button className='right-button' disabled={!isLogin} onClick={handleNavigateToMain}>건의함</button>
         <button className='right-button' disabled={!isLogin} onClick={handleNavigateToMyPage}>마이페이지</button>
-        <button className='right-button' disabled={!isLogin} onClick={handleLogout}>로그아웃</button>
+        <button className='right-button' disabled={!isLogin} onClick={handleLogoutClick}>로그아웃</button>
       </div>
     </div>
   );

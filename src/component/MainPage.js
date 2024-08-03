@@ -1,70 +1,85 @@
-import React, { useState } from 'react';
+// src/component/MainPage.js
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { getBoards, likePost, unlikePost } from '../api';
 import '../assets/css/Main.css';
 import { BsPersonSquare } from "react-icons/bs";
 import SuggestionForm from './SuggestionForm';
+import BoardForm from './BoardForm';
 
 function MainPage() {
-  const [selectedBoard, setSelectedBoard] = useState('board1');
+  const { user } = useContext(AuthContext);
+  const [selectedBoard, setSelectedBoard] = useState('ALL');
   const [selectedRow, setSelectedRow] = useState(null);
-  const boards = {
-    board1: [
-      { id: 1, 추천수: 63, 건의대상: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 건의내용: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 2, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 3, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 4, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 5, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 6, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 7, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 8, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 9, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 10, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 11, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 12, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 13, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 14, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 15, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 16, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 17, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 18, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 19, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 20, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 21, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 22, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 23, 추천수: 36, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' }
-      // 다른 항목 추가
-    ],
-    board2: [
-      { id: 1, 추천수: 2, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      // 다른 항목 추가
-    ],
-    board3: [
-      { id: 1, 추천수: 3, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      // 다른 항목 추가
-    ],
-    board4: [
-      { id: 1, 추천수: 4, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      // 다른 항목 추가
-    ],
-    board5: [
-      { id: 1, 추천수: 5, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      // 다른 항목 추가
-    ],
+  const [boards, setBoards] = useState([]);
+  const [isBoardFormOpen, setIsBoardFormOpen] = useState(false);
+  const [likedBoards, setLikedBoards] = useState(new Set());
+
+  const fetchBoards = useCallback(async () => {
+    try {
+      const response = await getBoards(user.accessToken, selectedBoard);
+      if (response.status === 200) {
+        const sortedBoards = response.data.boards.sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt));
+        setBoards(sortedBoards);
+        // 사용자가 이미 추천한 게시물 로드
+        const liked = new Set(response.data.likedBoards); // likedBoards가 API 응답에 포함된다고 가정
+        setLikedBoards(liked);
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      alert('Error fetching boards. Please try again.');
+    }
+  }, [user.accessToken, selectedBoard]);
+
+  useEffect(() => {
+    if (user && user.accessToken) {
+      fetchBoards();
+    }
+  }, [user, selectedBoard, fetchBoards]);
+
+  const handleBoardCreated = () => {
+    fetchBoards();
   };
 
-  // 클릭시 건의사항 보여주기
   const handleRowClick = (item) => {
     setSelectedRow(item);
   };
-  // 추천버튼 함수
-  const handleRecommend = () => {
-    const confirmRecommend = window.confirm("이 건의사항을 추천하시겠습니까?");
-    if (confirmRecommend) {
-      console.log("추천 완료");
-    } else {
-      console.log("추천 취소");
+
+  const handleRecommend = async (boardId) => {
+    try {
+      if (likedBoards.has(boardId)) {
+        // 이미 추천한 경우 추천 취소
+        const confirmUnrecommend = window.confirm("이 건의사항에 대한 추천을 취소하시겠습니까?");
+        if (confirmUnrecommend) {
+          await unlikePost(boardId, user.accessToken);
+          setLikedBoards(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(boardId);
+            return newSet;
+          });
+          setBoards(prevBoards => prevBoards.map(board => 
+            board.boardId === boardId ? { ...board, likes: board.likes - 1 } : board
+          ));
+          console.log("추천 취소 완료");
+        }
+      } else {
+        // 추천하지 않은 경우 추천 등록
+        const confirmRecommend = window.confirm("이 건의사항을 추천하시겠습니까?");
+        if (confirmRecommend) {
+          await likePost(boardId, user.accessToken);
+          setLikedBoards(prev => new Set(prev).add(boardId));
+          setBoards(prevBoards => prevBoards.map(board => 
+            board.boardId === boardId ? { ...board, likes: board.likes + 1 } : board
+          ));
+          console.log("추천 완료");
+        }
+      }
+    } catch (error) {
+      alert(error.message || '추천 작업 중 오류가 발생했습니다.');
     }
   };
-  // 신고버튼 함수
+
   const handleReport = () => {
     const confirmReport = window.confirm("이 건의사항을 신고하시겠습니까?");
     if (confirmReport) {
@@ -73,42 +88,74 @@ function MainPage() {
       console.log("신고 취소");
     }
   };
-  // 건의사항 뒤로가기 버튼
+
   const handleClose = () => {
     setSelectedRow(null);
+  };
+
+  const handleBoardSelection = (board) => {
+    if (board !== selectedBoard) {
+      setSelectedBoard(board);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000); // UTC 시간에서 로컬 타임존으로 변환
+      const month = String(localDate.getMonth() + 1).padStart(2, '0');
+      const day = String(localDate.getDate()).padStart(2, '0');
+      const hours = String(localDate.getHours()).padStart(2, '0');
+      const minutes = String(localDate.getMinutes()).padStart(2, '0');
+      return `${month}/${day} ${hours}:${minutes}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString; // 포맷팅 실패 시 원래 문자열 반환
+    }
   };
 
   return (
     <div>
       <div className="table-container-wrapper">
         <div className="board-buttons-container">
-          {['board1', 'board2', 'board3', 'board4', 'board5'].map((board) => (
+          {[
+            ['ALL', '전체 게시판'], 
+            ['EMPLOYMENT', '취업 게시판'], 
+            ['DEGREE', '학사 게시판'], 
+            ['SCHOLARSHIP', '장학 게시판']
+          ].map(([value, label]) => (
             <button
-              key={board}
-              onClick={() => setSelectedBoard(board)}
-              className={`board-button ${selectedBoard === board ? 'selected' : ''}`}
+              key={value}
+              onClick={() => handleBoardSelection(value)}
+              className={`board-button ${selectedBoard === value ? 'selected' : ''}`}
               disabled={selectedRow !== null}
             >
-              건의함 이름{board.slice(-1)}
+              {label}
             </button>
           ))}
         </div>
         <div className="table-container">
-          <SuggestionForm />
+          <SuggestionForm onBoardCreated={handleBoardCreated} />
+          {isBoardFormOpen && <BoardForm onClose={() => setIsBoardFormOpen(false)} onBoardCreated={handleBoardCreated} />}
           {selectedRow ? (
             <div className="detailed-view-content">
               <div className="icon-container">
                 <BsPersonSquare size={40} color="#4a5a6a" />
                 <div className="icon-text-container">
-                  <div id='c1'>{selectedRow.소속학과}</div>
-                  <div>{selectedRow.생성일자}</div>
+                  <div id='c1'>{selectedRow.category} 게시판</div>
+                  <div>{formatDate(selectedRow.updateAt)}</div>
                 </div>
               </div>
-              <p><h3>건의대상</h3> {selectedRow.건의대상}</p>
-              <p><h3>건의내용</h3> {selectedRow.건의내용}</p>
-              <p><strong>추천수:</strong> {selectedRow.추천수}</p>
+              <p><h3>{selectedRow.title}</h3></p>
+              <p>{selectedRow.content}</p>
+              <p><strong>추천수:</strong> {selectedRow.likes}</p>
               <div className="inner-button-container">
-                <button className="recommend-button" onClick={handleRecommend}>추천</button>
+                <button 
+                  className={`recommend-button ${likedBoards.has(selectedRow.boardId) ? 'liked' : ''}`}
+                  onClick={() => handleRecommend(selectedRow.boardId)}
+                >
+                  {likedBoards.has(selectedRow.boardId) ? '추천 취소' : '추천'}
+                </button>
                 <button className="report-button" onClick={handleReport}>신고</button>
                 <button className="close-button" onClick={handleClose}>글목록</button>
               </div>
@@ -118,20 +165,20 @@ function MainPage() {
               <thead>
                 <tr>
                   <th className="col1">추천수</th>
-                  <th className="col2">건의대상</th>
-                  <th className="col3">건의내용</th>
+                  <th className="col2">제목</th>
+                  <th className="col3">내용</th>
                   <th className="col4">생성 일자</th>
-                  <th className="col5">소속 학과</th>
+                  <th className="col5">카테고리</th>
                 </tr>
               </thead>
               <tbody>
-                {(boards[selectedBoard] || []).map(item => (
-                  <tr key={item.id} onClick={() => handleRowClick(item)} className="clickable-row">
-                    <td className="col1">{item.추천수}</td>
-                    <td className="col2">{item.건의대상}</td>
-                    <td className="col3">{item.건의내용}</td>
-                    <td className="col4">{item.생성일자}</td>
-                    <td className="col5">{item.소속학과}</td>
+                {boards.map(item => (
+                  <tr key={item.boardId} onClick={() => handleRowClick(item)} className="clickable-row">
+                    <td className="col1">{item.likes}</td>
+                    <td className="col2">{item.title}</td>
+                    <td className="col3">{item.content}</td>
+                    <td className="col4">{formatDate(item.updateAt)}</td>
+                    <td className="col5">{item.category}</td>
                   </tr>
                 ))}
               </tbody>

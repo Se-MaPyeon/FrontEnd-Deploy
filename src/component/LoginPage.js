@@ -1,15 +1,25 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/LoginBox.css';
 
 function LoginPage() {
-  const { isLogin, setIsLogin } = useContext(AuthContext);
+  const { isLogin, handleLogin } = useContext(AuthContext); 
   const navigate = useNavigate();
+  const [id, setId] = useState('');
+  const [pw, setPw] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    setIsLogin(true);
+    setLoading(true);
+    try {
+      await handleLogin(id, pw);
+    } catch (error) {
+      alert('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -24,15 +34,32 @@ function LoginPage() {
       <div className="login-form">
         <h2>로그인</h2>
         <p>(세종대학교 포털 <strong>ID/PW</strong>와 동일)</p>
-        {/* 로그인 form */}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={onSubmit}>
           <div className="input-container">
-            <input type="text" id="id" name="id" placeholder="ID" />
+            <input 
+              type="text" 
+              id="id" 
+              name="id" 
+              placeholder="ID" 
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              disabled={loading}
+            />
           </div>
           <div className="input-container">
-            <input type="password" id="pw" name="pw" placeholder="PW" />
+            <input 
+              type="password" 
+              id="pw" 
+              name="pw" 
+              placeholder="PW" 
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              disabled={loading}
+            />
           </div>
-          <button type="submit" className="login-button">로그인</button>
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? '로그인 중...' : '로그인'}
+          </button>
         </form>
       </div>
     </div>

@@ -7,10 +7,6 @@
  padding: 10px;
 }
 
-.suggestion-form-container.open {
- height: 250px;
-}
-
 .suggestion-form {
  display: flex;
  flex-direction: column;
@@ -20,14 +16,6 @@
 
 .form-group {
  display: contents;
-}
-
-.form-group label {
- grid-column: 1 / 2;
- align-self: center;
- justify-self: start;
- padding-right: 10px;
- font-weight: bold;
 }
 
 .form-group input,
@@ -68,7 +56,7 @@
 }
 
 .submit-button:hover {
- background: #cd0003; /* 호버 시 배경색 */
+ background: #cd0003;
 }
 
 .toggle-button-container {

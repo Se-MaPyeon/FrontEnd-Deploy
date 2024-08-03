@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './assets/css/App.css';
 import Footer from './component/Footer';
@@ -48,7 +48,7 @@ function App() {
 }
 
 const PrivateRoute = ({ children }) => {
-  const { isLogin } = React.useContext(AuthContext);
+  const { isLogin } = useContext(AuthContext);
   return isLogin ? children : <Navigate to="/login" />;
 };
 

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { getMyPageBoards, deleteBoard } from '../api';
 import '../assets/css/Main.css';
 import '../assets/css/MyPage.css';
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -6,34 +8,98 @@ import { BsPersonSquare } from "react-icons/bs";
 import SuggestionForm from './SuggestionForm';
 
 function MyPage() {
-  const [selectedBoard] = useState('myBoard');
+  const { user } = useContext(AuthContext);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [boards, setBoards] = useState({
-    myBoard: [
-      { id: 1, 추천수: 1, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 2, 추천수: 2, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 3, 추천수: 3, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 4, 추천수: 4, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' },
-      { id: 5, 추천수: 5, 건의대상: '건의대상 설명', 건의내용: '건의내용 설명', 생성일자: '2024/xx/xx', 소속학과: '컴퓨터공학과' }
-    ],
-  });
+  const [boards, setBoards] = useState([]);
+
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const response = await getMyPageBoards(user.accessToken); // api.js 호출
+        console.log('API Response:', response); // API 응답 확인
+        if (response.status === 200) { // 성공시
+          const sortedBoards = response.data.boards.sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt));
+          setBoards(sortedBoards);
+        } else {
+          alert(response.message);
+        }
+      } catch (error) { // 실패시
+        alert('Error fetching boards. Please try again.');
+      }
+    };
+    if (user && user.accessToken) { // user.token 대신 user.accessToken
+      fetchBoards();
+    }
+  }, [user]);
+
+  const handleBoardCreated = async () => {
+    try {
+      const response = await getMyPageBoards(user.accessToken); // api.js 호출
+      if (response.status === 200) { // 성공시
+        const sortedBoards = response.data.boards.sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt));
+        setBoards(sortedBoards);
+      } else {
+        alert(response.message);
+      }
+    } catch (error) { // 실패시
+      alert('Error fetching boards. Please try again.');
+    }
+  };
 
   const handleRowClick = (item) => {
     setSelectedRow(item);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-      setBoards((prevBoards) => {
-        const updatedBoard = prevBoards[selectedBoard].filter((item) => item.id !== id);
-        return { ...prevBoards, [selectedBoard]: updatedBoard };
-      });
+  const handleClose = () => {
+    setSelectedRow(null);
+  };
+
+  const handleRecommend = () => {
+    const confirmRecommend = window.confirm("이 건의사항을 추천하시겠습니까?");
+    if (confirmRecommend) {
+      console.log("추천 완료");
+    } else {
+      console.log("추천 취소");
     }
   };
 
-  // 건의사항 뒤로가기 버튼
-  const handleClose = () => {
-    setSelectedRow(null);
+  const handleReport = () => {
+    const confirmReport = window.confirm("이 건의사항을 신고하시겠습니까?");
+    if (confirmReport) {
+      console.log("신고 완료");
+    } else {
+      console.log("신고 취소");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+      try {
+        await deleteBoard(user.accessToken, id);
+        setBoards((prevBoards) => {
+          const updatedBoard = prevBoards.filter((item) => item.boardId !== id);
+          return updatedBoard;
+        });
+        alert('게시글 삭제 성공');
+      } catch (error) {
+        alert('게시글 삭제 실패. 다시 시도해주세요.');
+      }
+    }
+  };
+
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000); // UTC 시간에서 로컬 타임존으로 변환
+      const month = String(localDate.getMonth() + 1).padStart(2, '0');
+      const day = String(localDate.getDate()).padStart(2, '0');
+      const hours = String(localDate.getHours()).padStart(2, '0');
+      const minutes = String(localDate.getMinutes()).padStart(2, '0');
+      return `${month}/${day} ${hours}:${minutes}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString; // 포맷팅 실패 시 원래 문자열 반환
+    }
   };
 
   return (
@@ -45,29 +111,23 @@ function MyPage() {
           </button>
         </div>
         <div className="table-container">
-          <SuggestionForm />
+          <SuggestionForm onBoardCreated={handleBoardCreated} />
           {selectedRow ? (
             <div className="detailed-view-content">
               <div className="icon-container">
-                <BsPersonSquare size={40} color="#4a5a6a"/>
+                <BsPersonSquare size={40} color="#4a5a6a" />
                 <div className="icon-text-container">
-                  <div id='c1'>{selectedRow.소속학과}</div>
-                  <div>{selectedRow.생성일자}</div>
+                  <div id='c1'>{selectedRow.category} 게시판</div>
+                  <div>{formatDate(selectedRow.updateAt)}</div>
                 </div>
               </div>
-              <p>
-                <h3>건의대상</h3> {selectedRow.건의대상}
-              </p>
-              <p>
-                <h3>건의내용</h3> {selectedRow.건의내용}
-              </p>
-              <p>
-                <strong>추천수:</strong> {selectedRow.추천수}
-              </p>
+              <p><h3>{selectedRow.title}</h3></p>
+              <p>{selectedRow.content}</p>
+              <p><strong>추천수:</strong> {selectedRow.likes}</p>
               <div className="inner-button-container">
-                <button className="close-button" onClick={handleClose}>
-                  글목록
-                </button>
+                <button className="recommend-button" onClick={handleRecommend}>추천</button>
+                <button className="report-button" onClick={handleReport}>신고</button>
+                <button className="close-button" onClick={handleClose}>글목록</button>
               </div>
             </div>
           ) : (
@@ -75,24 +135,28 @@ function MyPage() {
               <thead>
                 <tr>
                   <th className="col1">추천수</th>
-                  <th className="col2">건의대상</th>
-                  <th className="col3">건의내용</th>
+                  <th className="col2">제목</th>
+                  <th className="col3">내용</th>
                   <th className="col4">생성 일자</th>
                   <th className="col_bin">삭제</th>
                 </tr>
               </thead>
               <tbody>
-                {(boards[selectedBoard] || []).map((item) => (
-                  <tr key={item.id} onClick={() => handleRowClick(item)} className="clickable-row">
-                    <td className="col1">{item.추천수}</td>
-                    <td className="col2">{item.건의대상}</td>
-                    <td className="col3">{item.건의내용}</td>
-                    <td className="col4">{item.생성일자}</td>
+                {boards.length > 0 ? boards.map(item => (
+                  <tr key={item.boardId} onClick={() => handleRowClick(item)} className="clickable-row">
+                    <td className="col1">{item.likes}</td>
+                    <td className="col2">{item.title}</td>
+                    <td className="col3">{item.content}</td>
+                    <td className="col4">{formatDate(item.updateAt)}</td>
                     <td className="col_bin">
-                      <button className="bin" onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}><FaRegTrashAlt /></button>
+                      <button className="bin" onClick={(e) => { e.stopPropagation(); handleDelete(item.boardId); }}><FaRegTrashAlt /></button>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan="5">작성한 게시글이 없습니다.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           )}
