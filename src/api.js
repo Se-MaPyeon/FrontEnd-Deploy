@@ -3,9 +3,9 @@ import axios from 'axios';
 // 로그인 api
 export const login = async (id, pw) => {
     try {
-        console.log(`Sending login request to /api/v1/login with id: ${id} and pw: ${pw}`); // 로그 추가
+        console.log(`Sending login request to /api/v1/login with id: ${id} and pw: ${pw}`);
         const response = await axios.post(`/api/v1/login`, { id, pw }, { timeout: 5000 });
-        console.log('Login response:', response); // 응답 로그 추가
+        console.log('Login response:', response);
         return response.data;
     } catch (error) {
         console.error('Error logging in:', error);
@@ -69,15 +69,15 @@ export const createBoard = async (accessToken, title, content, category) => {
 // 게시물 삭제 api
 export const deleteBoard = async (accessToken, boardId) => {
     try {
-      const response = await axios.delete(`/api/v1/board/${boardId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-      return response.data;
+        const response = await axios.delete(`/api/v1/board/${boardId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+        return response.data;
     } catch (error) {
-      console.error('Error deleting board:', error);
-      throw error;
+        console.error('Error deleting board:', error);
+        throw error;
     }
 };
 
@@ -112,14 +112,14 @@ export const unlikePost = async (boardId, token) => {
 
 // 게시물 추천 수 가져오기
 export const getLikeCount = async (boardId, accessToken) => {
-    console.log(`Fetching like count for boardId: ${boardId} with token: ${accessToken}`); // 로그 추가
+    console.log(`Fetching like count for boardId: ${boardId} with token: ${accessToken}`);
     try {
         const response = await axios.get(`/api/v1/like/${boardId}/count`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
         });
-        return response.data.data; // Assuming the API response structure
+        return response.data.data;
     } catch (error) {
         console.error('Error fetching like count:', error);
         throw error;
