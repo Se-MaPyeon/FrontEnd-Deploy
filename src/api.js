@@ -111,3 +111,19 @@ export const unlikePost = async (boardId, token) => {
         throw error.response.data;
     }
 };
+
+// 게시물 추천 수 가져오기
+export const getLikeCount = async (boardId, accessToken) => {
+    console.log(`Fetching like count for boardId: ${boardId} with token: ${accessToken}`); // 로그 추가
+    try {
+        const response = await axios.get(`${BASE_URL}/like/${boardId}/count`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        return response.data.data; // Assuming the API response structure
+    } catch (error) {
+        console.error('Error fetching like count:', error);
+        throw error;
+    }
+};
