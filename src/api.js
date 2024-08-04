@@ -9,7 +9,7 @@ export const apiClient = axios.create({
     baseURL: host,
 });
 
-console.log(apiClient.defaults.baseURL);
+console.log("Base URL is set to:", apiClient.defaults.baseURL);
 
 // 로그인 API
 export const login = async (id, pw) => {
