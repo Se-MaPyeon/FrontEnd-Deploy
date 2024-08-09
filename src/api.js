@@ -91,48 +91,43 @@ export const deleteBoard = async (accessToken, boardId) => {
         throw error;
     }
 };
-
 // 게시물 추천 API
 export const likePost = async (boardId, token) => {
     try {
         const response = await apiClient.post(`/v1/like/${boardId}`, null, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             }
         });
-        console.log(response);
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        console.error('Failed to like the post:', error);
+        throw error;
     }
 };
 
-// 게시물 추천 취소 API
+// 게시물 추천취소 API
 export const unlikePost = async (boardId, token) => {
     try {
         const response = await apiClient.delete(`/v1/like/${boardId}`, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             }
         });
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        console.error('Failed to unlike the post:', error);
+        throw error;
     }
 };
 
-// 게시물 추천 수 가져오기 API
-export const getLikeCount = async (boardId, accessToken) => {
-    console.log(`Fetching like count for boardId: ${boardId} with token: ${accessToken}`); // 로그 추가
+// like 개수 반환하는 API
+export const getLikeCount = async (boardId) => {
     try {
-        const response = await apiClient.get(`/v1/like/${boardId}/count`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-        return response.data.data; // Assuming the API response structure
+        const response = await apiClient.get(`/v1/like/${boardId}/count`);
+        return response.data;
     } catch (error) {
-        console.error('Error fetching like count:', error);
+        console.error("Failed to get like count:", error);
         throw error;
     }
 };

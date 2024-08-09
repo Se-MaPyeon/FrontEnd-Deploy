@@ -1,4 +1,3 @@
-// src/component/MainPage.js
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getBoards, likePost, unlikePost } from '../api';
@@ -21,7 +20,6 @@ function MainPage() {
       if (response.status === 200) {
         const sortedBoards = response.data.boards.sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt));
         setBoards(sortedBoards);
-        // 사용자가 이미 추천한 게시물 로드
         const liked = new Set(response.data.likedBoards); // likedBoards가 API 응답에 포함된다고 가정
         setLikedBoards(liked);
       } else {
@@ -38,6 +36,16 @@ function MainPage() {
     }
   }, [user, selectedBoard, fetchBoards]);
 
+  useEffect(() => {
+    if (selectedRow) {
+      // selectedRow가 변경될 때마다 해당 보드의 likes를 업데이트
+      const updatedRow = boards.find(board => board.boardId === selectedRow.boardId);
+      if (updatedRow) {
+        setSelectedRow(updatedRow);
+      }
+    }
+  }, [boards, selectedRow]);
+
   const handleBoardCreated = () => {
     fetchBoards();
   };
@@ -47,35 +55,40 @@ function MainPage() {
   };
 
   const handleRecommend = async (boardId) => {
+    const isLiked = likedBoards.has(boardId);
+
+    // 화면에 추천수 즉시 반영
+    setBoards(prevBoards => prevBoards.map(board => 
+      board.boardId === boardId ? 
+      { ...board, likes: isLiked ? board.likes - 1 : board.likes + 1 } : 
+      board
+    ));
+
     try {
-      if (likedBoards.has(boardId)) {
+      if (isLiked) {
         // 이미 추천한 경우 추천 취소
-        const confirmUnrecommend = window.confirm("이 건의사항에 대한 추천을 취소하시겠습니까?");
-        if (confirmUnrecommend) {
-          await unlikePost(boardId, user.accessToken);
-          setLikedBoards(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(boardId);
-            return newSet;
-          });
-          setBoards(prevBoards => prevBoards.map(board => 
-            board.boardId === boardId ? { ...board, likes: board.likes - 1 } : board
-          ));
-          console.log("추천 취소 완료");
-        }
+        await unlikePost(boardId, user.accessToken);
+        setLikedBoards(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(boardId);
+          return newSet;
+        });
       } else {
         // 추천하지 않은 경우 추천 등록
-        const confirmRecommend = window.confirm("이 건의사항을 추천하시겠습니까?");
-        if (confirmRecommend) {
-          await likePost(boardId, user.accessToken);
-          setLikedBoards(prev => new Set(prev).add(boardId));
-          setBoards(prevBoards => prevBoards.map(board => 
-            board.boardId === boardId ? { ...board, likes: board.likes + 1 } : board
-          ));
-          console.log("추천 완료");
-        }
+        await likePost(boardId, user.accessToken);
+        setLikedBoards(prev => {
+          const newSet = new Set(prev);
+          newSet.add(boardId);
+          return newSet;
+        });
       }
     } catch (error) {
+      // 에러 발생 시 화면에 반영된 추천 수 롤백
+      setBoards(prevBoards => prevBoards.map(board => 
+        board.boardId === boardId ? 
+        { ...board, likes: isLiked ? board.likes + 1 : board.likes - 1 } : 
+        board
+      ));
       alert(error.message || '추천 작업 중 오류가 발생했습니다.');
     }
   };
@@ -83,7 +96,7 @@ function MainPage() {
   const handleReport = () => {
     const confirmReport = window.confirm("이 건의사항을 신고하시겠습니까?");
     if (confirmReport) {
-      console.log("신고 완료");
+      window.alert("신고가 완료되었습니다.");
     } else {
       console.log("신고 취소");
     }

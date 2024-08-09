@@ -54,24 +54,6 @@ function MyPage() {
     setSelectedRow(null);
   };
 
-  const handleRecommend = () => {
-    const confirmRecommend = window.confirm("이 건의사항을 추천하시겠습니까?");
-    if (confirmRecommend) {
-      console.log("추천 완료");
-    } else {
-      console.log("추천 취소");
-    }
-  };
-
-  const handleReport = () => {
-    const confirmReport = window.confirm("이 건의사항을 신고하시겠습니까?");
-    if (confirmReport) {
-      console.log("신고 완료");
-    } else {
-      console.log("신고 취소");
-    }
-  };
-
   const handleDelete = async (id) => {
     if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
       try {
@@ -125,8 +107,6 @@ function MyPage() {
               <p>{selectedRow.content}</p>
               <p><strong>추천수:</strong> {selectedRow.likes}</p>
               <div className="inner-button-container">
-                <button className="recommend-button" onClick={handleRecommend}>추천</button>
-                <button className="report-button" onClick={handleReport}>신고</button>
                 <button className="close-button" onClick={handleClose}>글목록</button>
               </div>
             </div>
