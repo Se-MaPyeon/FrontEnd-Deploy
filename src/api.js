@@ -15,7 +15,7 @@ console.log("Base URL is set to:", apiClient.defaults.baseURL);
 export const login = async (id, pw) => {
     try {
         console.log(`Sending login request to ${apiClient.defaults.baseURL}/v1/login with id: ${id} and pw: ${pw}`); // 로그 추가
-        const response = await apiClient.post('/v1/login', { id, pw }, { timeout: 5000 });
+        const response = await apiClient.post('/v1/login', { id, pw });
         console.log('Login response:', response); // 응답 로그 추가
         return response.data;
     } catch (error) {
